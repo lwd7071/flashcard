@@ -1,22 +1,21 @@
 import { createClient } from "@supabase/supabase-js";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-// Hỗ trợ cả tên biến chuẩn (ANON_KEY) và tên biến mới trên tab Framework của Supabase (PUBLISHABLE_KEY)
-const supabaseAnonKey =
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
-  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY ||
-  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
-  "";
+function cleanEnv(val?: string) {
+  if (!val || val.includes("your_supabase_")) return "";
+  return val.trim();
+}
 
-// Kiểm tra xem người dùng đã điền cấu hình Supabase thật vào .env.local chưa
+const supabaseUrl = cleanEnv(process.env.NEXT_PUBLIC_SUPABASE_URL);
+const supabaseAnonKey =
+  cleanEnv(process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY) ||
+  cleanEnv(process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY) ||
+  cleanEnv(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+
 export const isSupabaseConfigured =
   Boolean(supabaseUrl) &&
   Boolean(supabaseAnonKey) &&
-  !supabaseUrl.includes("your_supabase_project_url_here") &&
-  !supabaseAnonKey.includes("your_supabase_anon_key_here") &&
   supabaseUrl.startsWith("http");
 
-// Khởi tạo client (dùng URL placeholder hợp lệ nếu chưa điền để không crash lúc build)
 export const supabase = createClient(
   isSupabaseConfigured ? supabaseUrl : "https://placeholder-project.supabase.co",
   isSupabaseConfigured ? supabaseAnonKey : "placeholder-anon-key"

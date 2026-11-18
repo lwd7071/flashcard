@@ -117,13 +117,6 @@ export default function HomePage() {
       return;
     }
 
-    if (!isSupabaseConfigured) {
-      setAuthError(
-        "Bạn chưa điền NEXT_PUBLIC_SUPABASE_URL và NEXT_PUBLIC_SUPABASE_ANON_KEY trong file .env.local!"
-      );
-      return;
-    }
-
     setAuthLoading(true);
     try {
       if (authMode === "register") {
@@ -147,10 +140,7 @@ export default function HomePage() {
           .single();
 
         if (error || !created) {
-          setAuthError(
-            error?.message ||
-              "Không tạo được tài khoản. Bạn đã chạy file supabase/schema.sql chưa?"
-          );
+          setAuthError("Không thể tạo tài khoản lúc này, vui lòng thử lại sau nha!");
           setAuthLoading(false);
           return;
         }
@@ -166,9 +156,7 @@ export default function HomePage() {
           .maybeSingle();
 
         if (error) {
-          setAuthError(
-            "Lỗi kết nối Supabase: Hãy chắc chắn bạn đã chạy file supabase/schema.sql!"
-          );
+          setAuthError("Kết nối hệ thống đang bận, vui lòng thử lại sau nha!");
           setAuthLoading(false);
           return;
         }
@@ -243,18 +231,6 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Banner nhắc điền .env.local nếu chưa cấu hình */}
-      {!isSupabaseConfigured && (
-        <div className="bg-[#FFE599] border-b-2 border-[#E6C86E] px-4 py-3 text-center text-sm font-semibold text-[#5C4408] flex items-center justify-center gap-2">
-          <AlertCircle className="w-4 h-4 shrink-0" />
-          <span>
-            Bạn nhớ điền <code>NEXT_PUBLIC_SUPABASE_URL</code> &{" "}
-            <code>NEXT_PUBLIC_SUPABASE_ANON_KEY</code> vào file{" "}
-            <code>.env.local</code> và chạy <code>supabase/schema.sql</code> nha!
-          </span>
-        </div>
-      )}
-
       {/* Header */}
       <header className="sticky top-0 z-20 bg-[#FFFDF7]/90 backdrop-blur-md border-b-2 border-[#F2E6D8]">
         <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
